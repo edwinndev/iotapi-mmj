@@ -1,6 +1,6 @@
 # Descripcion
 
-REST API desarrollada GO y MySQL para almacenamiento de datos de dispositivos IoT
+REST API desarrollada Golang y MySQL para almacenamiento de datos de dispositivos IoT
 
 ### GO VERSION
 version go1.19.4
