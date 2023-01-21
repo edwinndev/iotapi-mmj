@@ -13,7 +13,7 @@ import (
 
 func ConfigureThermometerRouter(router *mux.Router) {
 	router.HandleFunc("", findAllThermometers).Methods(http.MethodGet)
-	router.HandleFunc("/{device}", findLastValuesByDevice).Methods(http.MethodGet)
+	router.HandleFunc("/{device}", findLastValueByDevice).Methods(http.MethodGet)
 	router.HandleFunc("", saveThermometerValue).Methods(http.MethodPost)
 	router.HandleFunc("/{device}", middlewares.JWTMiddlweare(deleteThermometerTableValue)).Methods(http.MethodDelete)
 }
@@ -45,11 +45,10 @@ func _(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func findLastValuesByDevice(w http.ResponseWriter, r *http.Request) {
+func findLastValueByDevice(w http.ResponseWriter, r *http.Request) {
 	deviceName := mux.Vars(r)["device"]
 	var th models.Thermometer
-	database.Mysql.Order("id DESC").Limit(1).First(&th)
-	exec := database.Mysql.Exec("SELECT * FROM thermometers WHERE device=? ORDER BY id DESC LIMIT 1", deviceName)
+	exec := database.Mysql.Raw("SELECT * FROM thermometers WHERE device=? ORDER BY id DESC LIMIT 1", deviceName).Scan(&th)
 	if exec.Error != nil {
 		commons.ApiBadRequest(w, "Error al obtener valores")
 	} else {
